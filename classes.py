@@ -85,7 +85,7 @@ class Pokemon:
 
 
 class Move:
-    def __init__(self, name, type, category, power, accuracy, priority, pp, crit, statChance, ailment, ailmentChance, flinchChance, healing, maxTurns, minTurns, maxHits, minHits, drain):
+    def __init__(self, name, type, category, power, accuracy, priority, pp, crit, stat, statStage, statChance, ailment, ailmentChance, flinchChance, healing, maxTurns, minTurns, maxHits, minHits, drain):
         self.name = name
         self.type = type
         self.category = category
@@ -94,6 +94,8 @@ class Move:
         self.priority = priority
         self.pp = pp
         self.crit = crit
+        self.stat = stat
+        self.statStage = statStage
         self.statChance = statChance
         self.ailment = ailment
         self.ailmentChance = ailmentChance
@@ -118,20 +120,14 @@ class Move:
             for i in hits:
                 for targetPkmn in targetPkmns:
                     self.damageCalculation(self, sourcePkmn, targetPkmn, 'spAtk', 'spDef', targetBonus)
-        else:
-            if self.category.__contains__('ailment'):
-                if random.random() < self.ailmentChance:
-                    for targetPkmn in targetPkmns:
-                        targetPkmn.ailment = self.ailment
+        for targetPkmn in targetPkmns:
+            if random.random() < self.ailmentChance:
+                targetPkmn.ailment = self.ailment
+        if random.random() < self.statChance:
+            if self.statStage > 0:
+                sourcePkmn.battleStats[self.stat] += self.statStage
             else:
-                for stat in statList:
-                    if self.category.__contains__(stat + '+'):
-                        if random.random() < self.statChance:
-                            sourcePkmn.battleStats[stat] += 1
-                    if self.category.__contains__(stat + '-'):
-                        for targetPkmn in targetPkmns:
-                            if random.random() < self.statChance:
-                                targetPkmn.battleStats[stat] -= 1
+                targetPkmn.battleStats[self.stat] += self.statStage
 
     def damageCalculation(self, sourcePkmn: Pokemon, targetPkmn: Pokemon, sourceStat, targetStat, targetBonus):
         critBonus = 1.5 if random.random() < critProb[self.crit] else 1
