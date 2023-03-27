@@ -1,4 +1,4 @@
-nature = {
+natureList = {
     'hardy': {'atk': 1, 'def': 1, 'spAtk': 1, 'spDef': 1, 'speed': 1},
     'lonely': {'atk': 1.1, 'def': 0.9, 'spAtk': 1, 'spDef': 1, 'speed': 1},
     'brave': {'atk': 1.1, 'def': 1, 'spAtk': 1, 'spDef': 1, 'speed': 0.9},
