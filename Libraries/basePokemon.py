@@ -1,6 +1,6 @@
 from classes import BasePokemon
 
-basePokemonList = {
+basePokemon = {
     'bulbasaur': BasePokemon('bulbasaur', 'grass', 'poison', {'hp': 45, 'atk': 49, 'def ': 49, 'spAtk': 65, 'spDef': 65, 'speed': 45}, 'medium slow'),
     'ivysaur': BasePokemon('ivysaur', 'grass', 'poison', {'hp': 60, 'atk': 62, 'def ': 63, 'spAtk': 80, 'spDef': 80, 'speed': 60}, 'medium slow'),
     'venusaur': BasePokemon('venusaur', 'grass', 'poison', {'hp': 80, 'atk': 82, 'def ': 83, 'spAtk': 100, 'spDef': 100, 'speed': 80}, 'medium slow'),
