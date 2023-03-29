@@ -1,10 +1,10 @@
-from Libraries.basePokemon import basePokemonList
-from Libraries.moves import *
-from Libraries.nature import natureList
-from Libraries.typeEffectiveness import typeEff
+from BasePokemon import basePokemonList
+from Moves import *
+from Nature import natureList
+from TypeEffectiveness import typeEff
+from ExpCurves import expCurve
 import random
 from collections.abc import Iterable
-from Libraries.expCurves import expCurve
 
 statList = ['hp', 'atk', 'def', 'spAtk', 'spDef', 'speed', 'acc', 'eva']
 critProb = {0: 1/24, 1: 1/8, 2: 1/2, 3: 1, 4: 1}
@@ -71,28 +71,24 @@ class Pokemon:
         if move.pp > 0:
             move.pp -= 1
             hits = random.randint(move.minHits, move.maxHits)
-            if move.category.__contains__('physical'):
+            if move.category != 'status':
                 targetBonus = 0.75 if len(targetPkmns) > 1 else 1
                 for targetPkmn in targetPkmns:
-                    accuracyUser = updateValue(battleStatModifier[self.battleStats['acc']], -battleStatModifier[targetPkmn.battleStats['eva']], -6, 6)
-                    hitChance = move.accuracy * accuracyUser
-                    if random.random() < hitChance:
+                    accuracyUser = battleStatModifier[updateValue(self.battleStats['acc'], -targetPkmn.battleStats['eva'],-6,6)]
+                    hitChance = 1 if (move.acuracy == None) else move.acuracy * accuracyUser
+                    if randomProb() < hitChance:
                         for i in hits:
-                            self.damage(move, self, targetPkmn, 'atk', 'def', targetBonus)
-            elif move.category.__contains__('special'):
-                targetBonus = 0.75 if len(targetPkmns) > 1 else 1
+                            if move.category=='physical':
+                                self.damage(move, self, targetPkmn, 'atk', 'def', targetBonus)
+                            elif move.category == 'special':
+                                self.damage(move, self, targetPkmn, 'spAtk', 'spDef', targetBonus)
+            if move.ailmentChance != None:
                 for targetPkmn in targetPkmns:
-                    accuracyUser = updateValue(battleStatModifier[self.battleStats['acc']], -battleStatModifier[targetPkmn.battleStats['eva']], -6, 6)
-                    hitChance = move.accuracy * accuracyUser
-                    if random.random() < hitChance:
-                        for i in hits:
-                            self.damage(move, self, targetPkmn, 'spAtk', 'spDef', targetBonus)
-            for targetPkmn in targetPkmns:
-                if random.random() < move.ailmentChance:
-                    targetPkmn.ailment = move.ailment
-            statChangeProb = random.random()
+                    if randomProb() < move.alimentChance:
+                        targetPkmn.ailment = move.aliment
+            statChangeProb = randomProb()
             for i in range(len(move.stats)):
-                if statChangeProb < move.statsChance[i]:
+                if statChangeProb < move.statsChance[i]/100.0:
                     if move.statsStage[i] > 0:
                         updateValue(
                             self.battleStats[move.stats[i]], move.statsStage[i], -6, 6)
@@ -101,22 +97,30 @@ class Pokemon:
                             targetPkmn.battleStats[move.stats[i]], move.statsStage[i], -6, 6)
 
     def damage(self, move: Move, targetPkmn: 'Pokemon', sourceStat, targetStat, targetBonus):
-        critBonus = 1.5 if random.random() < critProb[move.crit] else 1
-        randomBonus = random.randint(85, 100) / 100
-        stabBonus = 1.5 if (move.type == self.type1 or move.type == self.type2) else 1
-        if min(typeEff[move.type, targetPkmn.type1], typeEff[move.type, targetPkmn.type2]) == 0:
-            typeBonus = 0
+        if (move.power == None):
+            targetPkmn.updateHp(-targetPkmn.currentStats['hp'])
+            self.updateHp(targetPkmn.currentStats['hp'] * move.drain)
         else:
-            typeBonus = max(typeEff[move.type, targetPkmn.type1], typeEff[move.type, targetPkmn.type2])
-        burnBonus = 0.5 if (sourceStat == 'atk' and self.ailment == 'burn') else 1
-        modifier = critBonus * targetBonus * randomBonus * stabBonus * typeBonus * burnBonus
-        # Damage calculation from generation V onward. Ignored parental bond, weather, glaive rush, zMove, teraShield and other parameters.
-        damageBase = (2*self.level/5 + 2) * move.power
-        damageAtk = self.currentStats[sourceStat] * statModifier[self.battleStats[sourceStat]]
-        damageDef = targetPkmn.currentStats[targetStat] * statModifier[targetPkmn.battleStats[targetStat]]
-        damage = (damageBase * damageAtk * damageDef/50 + 2) * modifier
-        targetPkmn.updateHp(-damage)
-        self.updateHp(damage * move.drain)
+            critBonus = 1.5 if random.random() < critProb[move.crit] else 1
+            randomBonus = random.randint(85, 100) / 100
+            stabBonus = 1.5 if (move.type == self.type1 or move.type == self.type2) else 1
+            if min(typeEff[move.type, targetPkmn.type1], typeEff[move.type, targetPkmn.type2]) == 0:
+                typeBonus = 0
+            else:
+                typeBonus = max(typeEff[move.type, targetPkmn.type1], typeEff[move.type, targetPkmn.type2])
+            burnBonus = 0.5 if (sourceStat == 'atk' and self.ailment == 'burn') else 1
+            modifier = critBonus * targetBonus * randomBonus * stabBonus * typeBonus * burnBonus
+            # Damage calculation from generation V onward. Ignored parental bond, weather, glaive rush, zMove, teraShield and other parameters.
+            damageBase = (2*self.level/5 + 2) * move.power
+            damageAtk = self.currentStats[sourceStat] * statModifier[self.battleStats[sourceStat]]
+            damageDef = targetPkmn.currentStats[targetStat] * statModifier[targetPkmn.battleStats[targetStat]]
+            damage = (damageBase * damageAtk * damageDef/50 + 2) * modifier
+            targetPkmn.updateHp(-damage)
+            self.updateHp(damage * move.drain)
+
+
+def randomProb():
+    return random.uniform(0, 100)
 
 
 def updateValue(value, update, valueMin, valueMax):
