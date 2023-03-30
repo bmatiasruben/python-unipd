@@ -1,8 +1,8 @@
-from BasePokemon import basePokemonList
-from Moves import *
-from Nature import natureList
-from TypeEffectiveness import typeEff
-from ExpCurves import expCurve
+from Libraries.BasePokemon import basePokemonList
+from Libraries.Moves import *
+from Libraries.Nature import natureList
+from Libraries.TypeEffectiveness import typeEff
+from Libraries.ExpCurves import expCurve
 import random
 from collections.abc import Iterable
 
@@ -53,8 +53,9 @@ class Pokemon:
 
     def gainExperience(self, expGain):
         self.expPoints += expGain
-        newLevel = next(x for x, val in enumerate(expCurve(basePokemonList[self.name].experienceType)))
-
+        newLevel = next(x for x, val in enumerate(expCurve(basePokemonList[self.name].experienceType)) if val > self.expPoints)
+        for i in range(self.level, newLevel + 1):
+            self.levelUp()
 
     def levelUp(self):
         self.level += 1
