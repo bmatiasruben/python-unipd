@@ -1,7 +1,7 @@
 import pokebase as pb
 
 moveList = {}
-statDict = {'attack': 'atk', 'defense': 'def', 'special-attack': 'spAtk', 'special-defense': 'spDef', 'speed': 'speed', 'accuracy': 'acc', 'evasion': 'eva'}
+statDict = {'hp': 'hp', 'attack': 'atk', 'defense': 'def', 'special-attack': 'spAtk', 'special-defense': 'spDef', 'speed': 'speed', 'accuracy': 'acc', 'evasion': 'eva'}
 
 i = 1
 move = pb.APIResource('move', i)
@@ -52,3 +52,27 @@ try:
         j+=1
 except IndexError:
     pass
+
+
+for j in range(1, 152):
+
+pokemon = pb.APIResource('pokemon', 4)
+string = f'\'{pokemon.name}\': BasePokemon(\'{pokemon.name}\', [\'{str(pokemon.types[0].type)}\''
+try:
+    string += f', \'{str(pokemon.types[1].type)}\''
+except IndexError:
+    pass
+string += '], {'
+for stat in pokemon.stats[:-1]:
+    string += f'\'{statDict[str(stat.stat)]}\': {stat.base_stat}, '
+string += f'\'{statDict[str(pokemon.stats[-1].stat)]}\': {pokemon.stats[-1].base_stat}'
+string += '}'
+string += f', {pokemon.base_experience}, \'{pokemon.species.growth_rate.name.replace("-", " ")}\''
+string += ', {'
+for move in pokemon.moves[:-1]:
+    if move.version_group_details[-1].move_learn_method.name == 'level-up':
+        string += '{move.version_group_details[-1].level_learned_at}: [{move.move.name}], '
+string += '}, {'
+for move in pokemon.moves[:-1]:
+    if move.version_group_details[-1].move_learn_method.name == 'machine':
+        string += '{move.version_group_details[-1].level_learned_at}: [{move.move.name}], '

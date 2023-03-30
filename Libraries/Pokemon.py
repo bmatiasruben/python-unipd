@@ -59,10 +59,12 @@ class Pokemon:
     def levelUp(self):
         self.level += 1
         self.__updateStats()
+        
 
     def __updateStats(self):
         stats = Stats(self.baseStats, self.level, self.indivValues, self.effortValues, self.nature)
         self.currentStats = stats.currentStats()
+        self.maxHp = self.currentStats['hp']
 
     def updateHp(self, amount):
         updateValue(self.currentStats['hp'], amount, 0, self.maxHp)
@@ -104,10 +106,7 @@ class Pokemon:
             critBonus = 1.5 if random.random() < critProb[move.crit] else 1
             randomBonus = random.randint(85, 100) / 100
             stabBonus = 1.5 if (move.type == self.type1 or move.type == self.type2) else 1
-            if min(typeEff[move.type, targetPkmn.type1], typeEff[move.type, targetPkmn.type2]) == 0:
-                typeBonus = 0
-            else:
-                typeBonus = max(typeEff[move.type, targetPkmn.type1], typeEff[move.type, targetPkmn.type2])
+            typeBonus = typeEff[move.type, targetPkmn.type1] * typeEff[move.type, targetPkmn.type2]
             burnBonus = 0.5 if (sourceStat == 'atk' and self.ailment == 'burn') else 1
             modifier = critBonus * targetBonus * randomBonus * stabBonus * typeBonus * burnBonus
             # Damage calculation from generation V onward. Ignored parental bond, weather, glaive rush, zMove, teraShield and other parameters.
@@ -116,7 +115,7 @@ class Pokemon:
             damageDef = targetPkmn.currentStats[targetStat] * statModifier[targetPkmn.battleStats[targetStat]]
             damage = (damageBase * damageAtk * damageDef/50 + 2) * modifier
             targetPkmn.updateHp(-damage)
-            self.updateHp(damage * move.drain)
+            if (move.drain != None): self.updateHp(damage * move.drain)
 
 
 def randomProb():

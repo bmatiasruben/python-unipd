@@ -1,10 +1,13 @@
 class BasePokemon:
-    def __init__(self, name, type1, type2, baseStats, experienceType):
+    def __init__(self, name, type, baseStats, baseExperience, experienceType, learnedMoves, tmMoves, eggMoves):
         self.name = name
-        self.type1 = type1
-        self.type2 = type2
+        self.type = type
         self.baseStats = baseStats
+        self.baseExperience = baseExperience
         self.experienceType = experienceType
+        self.learnedMoves = learnedMoves
+        self.tmMoves = tmMoves
+        self.eggMoves = eggMoves
 
 basePokemonList = {
     'bulbasaur': BasePokemon('bulbasaur', 'grass', 'poison', {'hp': 45, 'atk': 49, 'def': 49, 'spAtk': 65, 'spDef': 65, 'speed': 45}, 'medium slow'),
