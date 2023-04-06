@@ -56,7 +56,7 @@ except IndexError:
 
 for j in range(1, 152):
 
-pokemon = pb.APIResource('pokemon', 4)
+pokemon = pb.APIResource('pokemon', 1)
 string = f'\'{pokemon.name}\': BasePokemon(\'{pokemon.name}\', [\'{str(pokemon.types[0].type)}\''
 try:
     string += f', \'{str(pokemon.types[1].type)}\''
@@ -69,10 +69,23 @@ string += f'\'{statDict[str(pokemon.stats[-1].stat)]}\': {pokemon.stats[-1].base
 string += '}'
 string += f', {pokemon.base_experience}, \'{pokemon.species.growth_rate.name.replace("-", " ")}\''
 string += ', {'
-for move in pokemon.moves[:-1]:
+for move in pokemon.moves:
     if move.version_group_details[-1].move_learn_method.name == 'level-up':
-        string += '{move.version_group_details[-1].level_learned_at}: [{move.move.name}], '
-string += '}, {'
-for move in pokemon.moves[:-1]:
+        string += f'{move.version_group_details[-1].level_learned_at}: \'{move.move.name}\', '
+string = string[:len(string) - 2]
+string += '}, ['
+for move in pokemon.moves:
     if move.version_group_details[-1].move_learn_method.name == 'machine':
-        string += '{move.version_group_details[-1].level_learned_at}: [{move.move.name}], '
+        string += f'\'{move.move.name}\', '
+string = string[:len(string) - 2]
+string += '], ['
+for move in pokemon.moves:
+    if move.version_group_details[-1].move_learn_method.name == 'egg':
+        string += f'\'{move.move.name}\', '
+string = string[:len(string) - 2]
+if pokemon.species.evolution_chain.chain.evolves_to != []:
+    string += f''
+
+
+pokemon.species.evolution_chain.chain.evolves_to[0].species.name
+pokemon.species.evolution_chain.chain.evolves_to[0].evolution_details[0].min_level
