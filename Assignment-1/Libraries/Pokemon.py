@@ -78,7 +78,7 @@ class Pokemon:
                 targetBonus = 0.75 if len(targetPkmns) > 1 else 1
                 for targetPkmn in targetPkmns:
                     accuracyUser = battleStatModifier[updateValue(self.battleStats['acc'], -targetPkmn.battleStats['eva'],-6,6)]
-                    hitChance = 1 if (move.accuracy == None) else move.accuracy * accuracyUser
+                    hitChance = 1 if (move.acuracy == None) else move.acuracy * accuracyUser
                     if randomProb() < hitChance:
                         for i in hits:
                             if move.category=='physical':

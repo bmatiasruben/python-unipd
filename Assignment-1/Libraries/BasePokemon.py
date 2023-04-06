@@ -1,17 +1,14 @@
 class BasePokemon:
-    def __init__(self, name, type, baseStats, baseExperience, experienceType, learnedMoves, tmMoves, eggMoves, **kwargs):
+    def __init__(self, name, type, baseStats, baseExperience, experienceType):
+        # , learnedMoves, tmMoves, eggMoves
         self.name = name
         self.type = type
         self.baseStats = baseStats
         self.baseExperience = baseExperience
         self.experienceType = experienceType
-        self.learnedMoves = learnedMoves
-        self.tmMoves = tmMoves
-        self.eggMoves = eggMoves
-        self.args = {}
-        for key, val in kwargs.items():
-            self.args[key] = val
-            setattr(self, key, val)
+        # self.learnedMoves = learnedMoves
+        # self.tmMoves = tmMoves
+        # self.eggMoves = eggMoves
 
 basePokemonList = {
     'bulbasaur': BasePokemon('bulbasaur', 'grass', 'poison', {'hp': 45, 'atk': 49, 'def': 49, 'spAtk': 65, 'spDef': 65, 'speed': 45}, 'medium slow'),
