@@ -169,8 +169,6 @@ class Pokemon:
         else:
             print('That move doesn\'t have any more PP left!')
 
-    
-
     def __ailment(self, move: Move, pokemon: 'Pokemon'):
         print('')
 

@@ -1,17 +1,18 @@
 def expCurve(expType):
     expCurve = {
-        'erratic': [],
-        'fast': [],
-        'medium fast': [],
-        'medium slow': [],
-        'slow': [],
-        'fluctuating': []
+        'erratic': [0],
+        'fast': [0],
+        'medium': [0],
+        'medium slow': [0],
+        'slow': [0],
+        'fluctuating': [0]
     }
 
     for i in range(2, 101):
-        expCurve['fast'].append(4*pow(i,3)/5)
-        expCurve['medium fast'].append(pow(i,3))
-        expCurve['medium slow'].append(6*pow(i,3)/5 - 15*pow(i,2) + 100*i-140)
+        expCurve['fast'].append(int(4*pow(i,3)/5))
+        expCurve['medium'].append(int(pow(i,3)))
+        expCurve['medium slow'].append(int(6*pow(i,3)/5 - 15*pow(i,2) + 100*i-140))
+        expCurve['slow'].append(int(5*pow(i,3)/4))
         if i < 50:
             expCurve['erratic'].append(int(pow(i,3)*(100-i)/50))
         elif i in range(50, 68):

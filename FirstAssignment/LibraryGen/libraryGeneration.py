@@ -1,4 +1,5 @@
 import pokebase as pb
+from collections import defaultdict
 
 moveList = {}
 statDict = {'hp': 'hp', 'attack': 'atk', 'defense': 'def', 'special-attack': 'spAtk', 'special-defense': 'spDef', 'speed': 'speed', 'accuracy': 'acc', 'evasion': 'eva'}
@@ -53,39 +54,40 @@ try:
 except IndexError:
     pass
 
-
-for j in range(1, 152):
-
-pokemon = pb.APIResource('pokemon', 1)
-string = f'\'{pokemon.name}\': BasePokemon(\'{pokemon.name}\', [\'{str(pokemon.types[0].type)}\''
-try:
-    string += f', \'{str(pokemon.types[1].type)}\''
-except IndexError:
-    pass
-string += '], {'
-for stat in pokemon.stats[:-1]:
-    string += f'\'{statDict[str(stat.stat)]}\': {stat.base_stat}, '
-string += f'\'{statDict[str(pokemon.stats[-1].stat)]}\': {pokemon.stats[-1].base_stat}'
-string += '}'
-string += f', {pokemon.base_experience}, \'{pokemon.species.growth_rate.name.replace("-", " ")}\''
-string += ', {'
-for move in pokemon.moves:
-    if move.version_group_details[-1].move_learn_method.name == 'level-up':
-        string += f'{move.version_group_details[-1].level_learned_at}: \'{move.move.name}\', '
-string = string[:len(string) - 2]
-string += '}, ['
-for move in pokemon.moves:
-    if move.version_group_details[-1].move_learn_method.name == 'machine':
-        string += f'\'{move.move.name}\', '
-string = string[:len(string) - 2]
-string += '], ['
-for move in pokemon.moves:
-    if move.version_group_details[-1].move_learn_method.name == 'egg':
-        string += f'\'{move.move.name}\', '
-string = string[:len(string) - 2]
-if pokemon.species.evolution_chain.chain.evolves_to != []:
-    string += f''
-
-
-pokemon.species.evolution_chain.chain.evolves_to[0].species.name
-pokemon.species.evolution_chain.chain.evolves_to[0].evolution_details[0].min_level
+with open('basePokemon.txt', 'w') as f:
+    for j in range(1, 152):
+        pokemon = pb.APIResource('pokemon', j)
+        string = f'\'{pokemon.name}\': BasePokemon({pokemon.id}, \'{pokemon.name}\', [\'{str(pokemon.types[0].type)}\''
+        try:
+            string += f', \'{str(pokemon.types[1].type)}\''
+        except IndexError:
+            pass
+        string += '], {'
+        for stat in pokemon.stats[:-1]:
+            string += f'\'{statDict[str(stat.stat)]}\': {stat.base_stat}, '
+        string += f'\'{statDict[str(pokemon.stats[-1].stat)]}\': {pokemon.stats[-1].base_stat}'
+        string += '}'
+        string += f', {pokemon.base_experience}, \'{pokemon.species.growth_rate.name.replace("-", " ")}\', '
+        levelUpMoves = defaultdict(list)
+        machineMoves = []
+        for move in pokemon.moves:
+            if move.version_group_details[-1].move_learn_method.name == 'level-up':
+                levelUpMoves[move.version_group_details[-1].level_learned_at].append(move.move.name)
+            elif move.version_group_details[-1].move_learn_method.name == 'machine':
+                machineMoves.append(move.move.name)
+        string += str(levelUpMoves)[28:-1]
+        string += ', {'
+        for stat in pokemon.stats:
+            string += f'\'{statDict[stat.stat.name]}\': {stat.effort}, '
+        string = string[:len(string) - 2]
+        string += '}'
+        if pokemon.species.evolution_chain.chain.evolves_to != []:
+            string += ', evolution={'
+            string += f'\'level\': {pokemon.species.evolution_chain.chain.evolves_to[0].evolution_details[0].min_level}, \'evolvesTo\': \'{pokemon.species.evolution_chain.chain.evolves_to[0].species.name}\''
+            string += '}'
+        if machineMoves != []:
+            string += ', machineMoves='
+            string += str(machineMoves)
+        string += '),'
+        print(string, file= f)
+        print(j)

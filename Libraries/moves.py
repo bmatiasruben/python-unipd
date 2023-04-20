@@ -9,6 +9,8 @@ class Move:
             self.args[key] = val
             setattr(self, key, val)
 
+ohkoMoves = ['fissure', 'guillotine', 'horn-drill', 'sheer-cold']
+
 moveList = {
     'pound': Move('pound', 'normal', 'physical', 35, power=40, accuracy=100),
     'karate-chop': Move('karate-chop', 'fighting', 'physical', 25, power=50, accuracy=100, critRate=1),
