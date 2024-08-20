@@ -1,4 +1,5 @@
-typeEff = {}
+import pandas as pd
+
 types = ['normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison',
          'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
 effectiveness = {}
@@ -26,13 +27,19 @@ effectiveness['dark'] = {'strong': ['ghost', 'psychic'], 'weak': ['fighting', 'd
 effectiveness['steel'] = {'strong': ['rock', 'ice', 'fairy'], 'weak': ['steel', 'fire', 'water', 'electric'], 'null': []}
 effectiveness['fairy'] = {'strong': ['fighting', 'dragon', 'dark'], 'weak': ['poison', 'steel', 'fire'], 'null': []}
 
+typeEffectiveness = pd.DataFrame(index=types, columns=types)
+
 for srcType in types:
     for targetType in types:
         if targetType in effectiveness[srcType]['strong']:
-            typeEff[srcType, targetType] = 2
+            typeEffectiveness.loc[srcType, targetType] = 2
         elif targetType in effectiveness[srcType]['weak']:
-            typeEff[srcType, targetType] = 0.5
+            typeEffectiveness.loc[srcType, targetType] = 0.5
         elif targetType in effectiveness[srcType]['null']:
-            typeEff[srcType, targetType] = 0
+            typeEffectiveness.loc[srcType, targetType] = 0
         else:
-            typeEff[srcType, targetType] = 1
+            typeEffectiveness.loc[srcType, targetType] = 1
+
+typeEffectiveness = typeEffectiveness.T
+
+

@@ -1,7 +1,7 @@
 from time import sleep
 from Libraries.Pokemon import Pokemon
 from Libraries.PokemonSprites import *
-from Libraries.BasePokemon import basePokemonList
+from Libraries.BasePokemon import basePokemon
 from Libraries.Moves import *
 from tabulate import tabulate
 
@@ -41,8 +41,24 @@ def printBattleUi(mainPkmn: Pokemon, opponentPkmn: Pokemon):
     print('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾')
     print('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾')
 
+def printReducedBattleUi(mainPkmn: Pokemon, opponentPkmn: Pokemon):
+    print('__________________________________________')
+    opponentSqrLen = len(opponentPkmn.name) + len(str(opponentPkmn.maxHp)) + len(str(opponentPkmn.currentHp)) + 4
+    opponentSqrH = '_'*opponentSqrLen
+    print(f'                      {opponentSqrH}')
+    print(f'                      |{opponentPkmn.name.capitalize()} {opponentPkmn.currentHp}/{opponentPkmn.maxHp}|')
+    opponentSqrH = '‾'*opponentSqrLen
+    print(f'                      {opponentSqrH}')
+    mainSqrLen = len(mainPkmn.name) + len(str(mainPkmn.maxHp)) + len(str(mainPkmn.currentHp)) + 4
+    mainSqrH = '_'*mainSqrLen
+    print(f'{mainSqrH}')
+    print(f'|{mainPkmn.name.capitalize()} {mainPkmn.currentHp}/{mainPkmn.maxHp}|')
+    mainSqrH = '‾'*mainSqrLen
+    print(f'{mainSqrH}')
+    print('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾')
+
 def printPokemonSummary(pokemon: Pokemon):
-    print(get_ascii_pokemon(basePokemonList[pokemon.name].pokedexNumber))
+    print(get_ascii_pokemon(basePokemon[pokemon.name].pokedexNumber))
     print('-----------------------------------------------')
     print(f'{pokemon.name.capitalize()}, Level {pokemon.level}')
     print(f'HP: {pokemon.currentHp}/{pokemon.maxHp}')
@@ -83,3 +99,20 @@ def printFirstStart():
     sleep(1)
     print('Let\'s test some pokemon shall, we?')
     sleep(1)
+
+def printPokemonList(character):
+    for index, pokemon in enumerate(character.pokemon):
+        print(index, ': ', pokemon.name, ', Level: ', pokemon.level)
+
+def printItems(character):
+    for index, item in enumerate(character.items):
+        print(index, ': ', item.key, ', Quantity: ', item.quantity)
+
+def printPokeCenter():
+    print('Welcome to the Pokemon Center')
+    print('Wait while we heal your pokemon')
+
+def printStore():
+    print('Welcome to the Pokemon Store')
+    print('Although you seem to have no money at all, have these free items!')
+    print('Please don\'t come back, you\'ll ruin our business!')
